@@ -1,7 +1,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace WorkoutBuilderAPI.JSON;
+namespace WorkoutBuilderAPI.Application.JSON;
 public class ReceptEntityJson
 {
     [JsonPropertyName("_id")]

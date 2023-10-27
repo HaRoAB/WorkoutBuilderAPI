@@ -1,36 +1,47 @@
-using WorkoutBuilderAPI.Models;
-using WorkoutBuilderAPI.Interfaces;
+using WorkoutBuilderAPI.Application.Models;
+using WorkoutBuilderAPI.Application.Interfaces;
+using WorkoutBuilderAPI.Application.Domain;
 using System.Text.Json;
 
-namespace WorkoutBuilderAPI.Services;
+namespace WorkoutBuilderAPI.Application.Services;
 
 public class WorkoutService : IWorkoutService
 {
-    public Task<WorkoutDTO> CreateWorkout(WorkoutDTO workout)
+    private readonly IWorkoutRepository _workoutRepository;
+
+    public WorkoutService(IWorkoutRepository workoutRepository)
     {
-        // create JSON file with workout data
-        string json = JsonSerializer.Serialize(workout);
-        File.WriteAllTextAsync($"{workout.Name}.json", json);
-        return Task.FromResult(workout);
+        _workoutRepository = workoutRepository;
     }
 
-    public Task<WorkoutDTO> DeleteWorkout(string id)
+    public Task CreateWorkout(string workoutJson)
     {
-        throw new NotImplementedException();
+        WorkoutModel workout = JsonSerializer.Deserialize<WorkoutModel>(workoutJson);
+        _workoutRepository.CreateWorkout(workout);
+        return Task.CompletedTask;
     }
 
-    public Task<WorkoutDTO> GetWorkout(string id)
+    public Task DeleteWorkout(string id)
     {
-        throw new NotImplementedException();
+        _workoutRepository.DeleteWorkout(id);
+        return Task.CompletedTask;
     }
 
-    public Task<List<WorkoutDTO>> GetWorkouts()
+    public Task<WorkoutModel> GetWorkout(string id)
     {
-        throw new NotImplementedException();
+        return _workoutRepository.GetWorkout(id);
+    
     }
 
-    public Task<WorkoutDTO> UpdateWorkout(WorkoutDTO workout)
+    public Task<List<WorkoutModel>> GetWorkouts()
     {
-        throw new NotImplementedException();
+        return _workoutRepository.GetWorkouts();
+    }
+
+    public Task UpdateWorkout(string workout)
+    {
+        WorkoutModel updatedWorkout = JsonSerializer.Deserialize<WorkoutModel>(workout);
+        _workoutRepository.UpdateWorkout(updatedWorkout);
+        return Task.CompletedTask;
     }
 }

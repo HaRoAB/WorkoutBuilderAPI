@@ -1,12 +1,12 @@
-using WorkoutBuilderAPI.Models;
+using WorkoutBuilderAPI.Application.Domain;
 
-namespace WorkoutBuilderAPI.Interfaces;
+namespace WorkoutBuilderAPI.Application.Interfaces;
 
 public interface IWorkoutService
 {
-    Task<WorkoutDTO> GetWorkout(string id);
-    Task<List<WorkoutDTO>> GetWorkouts();
-    Task<WorkoutDTO> CreateWorkout(WorkoutDTO workout);
-    Task<WorkoutDTO> UpdateWorkout(WorkoutDTO workout);
-    Task<WorkoutDTO> DeleteWorkout(string id);
+    Task<WorkoutModel> GetWorkout(string id);
+    Task<List<WorkoutModel>> GetWorkouts();
+    Task CreateWorkout(string workout);
+    Task UpdateWorkout(string workout);
+    Task DeleteWorkout(string id);
 }

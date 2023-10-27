@@ -1,4 +1,4 @@
-namespace WorkoutBuilderAPI.Domain
+namespace WorkoutBuilderAPI.Application.Domain
 {
     public class WorkoutModel
     {

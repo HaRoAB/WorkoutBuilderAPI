@@ -1,5 +1,5 @@
 
-namespace WorkoutBuilderAPI.Models;
+namespace WorkoutBuilderAPI.Application.Models;
 
 public class WorkoutDTO
 {
