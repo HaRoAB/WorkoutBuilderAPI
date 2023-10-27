@@ -1,0 +1,26 @@
+[
+    {
+        "_id" : "0",
+        "Name": "överkroppps wok ",
+        "Exercises": [
+            {
+                "name": "Benchpress ",
+                "sets": 5,
+                "reps": 8,
+                "rest": "2"
+            },
+            {
+                "name": "Benchpress ",
+                "sets": 4,
+                "reps": 4,
+                "rest": "2"
+            },
+            {
+                "excercisename": "Benchpress ",
+                "sets": 5,
+                "reps": 5,
+                "rest": "2"
+            }
+        ]
+    }
+]
