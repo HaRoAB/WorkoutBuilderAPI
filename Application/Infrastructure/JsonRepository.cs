@@ -5,7 +5,7 @@ namespace WorkoutBuilderAPI.Application.Infrastructure;
 
 public class JsonRepository : IWorkoutRepository
 {
-    private readonly string  directoryPath = "JSON";    
+    private readonly string  directoryPath = "./Application/Infrastructure/JSON";    
 
     public Task CreateWorkout(WorkoutModel workout)
     {
@@ -29,7 +29,7 @@ public class JsonRepository : IWorkoutRepository
 
     public Task<List<WorkoutModel>> GetWorkouts()
     {
-        string[] workoutFiles = Directory.GetFiles(directoryPath);
+        string[] workoutFiles = Directory.GetFiles(directoryPath).ToArray();
         List<WorkoutModel> workouts = new List<WorkoutModel>();
         foreach (string file in workoutFiles)
         {

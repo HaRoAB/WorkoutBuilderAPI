@@ -39,7 +39,6 @@ public class WorkoutController : ControllerBase
     [HttpPost]
     public Task CreateWorkout(string workout)
     {
-        JsonSerializer.Serialize(workout);
         _workoutService.CreateWorkout(workout);
         return Task.CompletedTask;
     }
