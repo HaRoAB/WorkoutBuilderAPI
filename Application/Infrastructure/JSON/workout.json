@@ -1,26 +1,22 @@
-[
-    {
-        "_id" : "0",
-        "Name": "överkroppps wok ",
-        "Exercises": [
-            {
-                "name": "Benchpress ",
-                "sets": 5,
-                "reps": 8,
-                "rest": "2"
-            },
-            {
-                "name": "Benchpress ",
-                "sets": 4,
-                "reps": 4,
-                "rest": "2"
-            },
-            {
-                "excercisename": "Benchpress ",
-                "sets": 5,
-                "reps": 5,
-                "rest": "2"
-            }
-        ]
-    }
-]
+{
+    "Id": "0",
+    "Name": "överkroppps",
+    "Exercises": [
+        {
+            "Id": "0",
+            "Name": "Benchpress",
+            "Sets": 5,
+            "Reps": 8,
+            "Rest": "00:01:00",
+            "Weight": 60.0
+        },
+        {
+            "Id": "1",
+            "Name": "addasd",
+            "Sets": 5,
+            "Reps": 8,
+            "Rest": "00:01:00",
+            "Weight": 60.0
+        }
+    ]
+}
