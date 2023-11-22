@@ -2,7 +2,6 @@ using System.Text.Json;
 using WorkoutBuilderAPI.Application.Domain;
 
 namespace WorkoutBuilderAPI.Application.Infrastructure;
-
 public class JsonRepository : IWorkoutRepository
 {
     private readonly string directoryPath = "./Application/Infrastructure/JSON";
