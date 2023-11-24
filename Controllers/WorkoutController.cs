@@ -8,7 +8,7 @@ namespace WorkoutBuilderAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WorkoutController : ControllerBase 
+public class WorkoutController : ControllerBase
 {
     private readonly IWorkoutService _workoutService;
 
@@ -17,17 +17,15 @@ public class WorkoutController : ControllerBase
         _workoutService = workoutService;
     }
 
-    [HttpGet] 
-    public async Task<List<string>> GetWorkouts()
+    [HttpGet]
+    public async Task<IActionResult> GetWorkouts()
     {
         var workouts = await _workoutService.GetWorkouts();
-        List<string> workoutsJson = new ();
-        foreach (var workout in workouts)
-        {
-            workoutsJson.Add(JsonSerializer.Serialize(workout));
-        }
-        return workoutsJson;
+        var json = JsonSerializer.Serialize(workouts);
+
+        return Content(json, "application/json");
     }
+
 
     [HttpGet("{id}")]
     public Task GetWorkout(string id)
