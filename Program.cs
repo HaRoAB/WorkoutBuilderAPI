@@ -1,29 +1,58 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
+using WorkoutBuilderAPI.Application.Domain;
+using WorkoutBuilderAPI.Application.Infrastructure;
 using WorkoutBuilderAPI.Application.Interfaces;
 using WorkoutBuilderAPI.Application.Services;
-using WorkoutBuilderAPI.Application.Infrastructure;
-using WorkoutBuilderAPI.Application.Domain;
-using Microsoft.AspNetCore.HttpOverrides;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
-builder.Services.AddScoped<IWorkoutRepository, JsonRepository>();
+//builder.Services.AddScoped<IWorkoutRepository, JsonRepository>();
+
+
+//DataMigration.MigrateDataToMongoDB();
+// builder.Services.AddScoped<IWorkoutRepository>(_ =>
+// {
+//     var connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
+//     var mongoClient = new MongoClient(connectionString);
+    
+//     return new MongoDbRepo(mongoClient, "all_your_database_are_belong_to_us");
+// });
+
+var connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
+var databaseName = "all_your_database_are_belong_to_us"; 
+
+builder.Services.AddScoped<IMongoClient>(_ => new MongoClient(connectionString));
+builder.Services.AddScoped<IWorkoutRepository>(_ => new MongoDbRepo(
+    _.GetService<IMongoClient>(),
+    databaseName
+));
+
+
+builder.Services.AddScoped<IWorkoutRepository, MongoDbRepo>();
+
+builder.Services.AddScoped<IWorkoutService, WorkoutService>();
+
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", builder =>
     {
         builder.AllowAnyOrigin()
-    .AllowAnyHeader()
-    .AllowAnyMethod();
+               .AllowAnyHeader()
+               .AllowAnyMethod();
     });
 });
+
+
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
