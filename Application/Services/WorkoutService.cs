@@ -1,7 +1,5 @@
-using WorkoutBuilderAPI.Application.Models;
 using WorkoutBuilderAPI.Application.Interfaces;
 using WorkoutBuilderAPI.Application.Domain;
-using System.Text.Json;
 
 namespace WorkoutBuilderAPI.Application.Services;
 
@@ -14,23 +12,22 @@ public class WorkoutService : IWorkoutService
         _workoutRepository = workoutRepository;
     }
 
-    public Task CreateWorkout(string workoutJson)
+    public Task CreateWorkout(WorkoutModel workout)
     {
-        WorkoutModel workout = JsonSerializer.Deserialize<WorkoutModel>(workoutJson);
         _workoutRepository.CreateWorkout(workout);
         return Task.CompletedTask;
     }
 
-    public Task DeleteWorkout(string id)
+    public Task DeleteWorkout(Guid id)
     {
         _workoutRepository.DeleteWorkout(id);
         return Task.CompletedTask;
     }
 
-    public Task<WorkoutModel> GetWorkout(string id)
+    public Task<WorkoutModel> GetWorkout(Guid id)
     {
         return _workoutRepository.GetWorkout(id);
-    
+
     }
 
     public Task<List<WorkoutModel>> GetWorkouts()
@@ -38,10 +35,9 @@ public class WorkoutService : IWorkoutService
         return _workoutRepository.GetWorkouts();
     }
 
-    public Task UpdateWorkout(string workout)
+    public Task UpdateWorkout(WorkoutModel workout)
     {
-        WorkoutModel updatedWorkout = JsonSerializer.Deserialize<WorkoutModel>(workout);
-        _workoutRepository.UpdateWorkout(updatedWorkout);
+        _workoutRepository.UpdateWorkout(workout);
         return Task.CompletedTask;
     }
 }

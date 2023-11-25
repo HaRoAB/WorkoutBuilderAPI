@@ -13,21 +13,21 @@ public class JsonRepository : IWorkoutRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteWorkout(string workoutName)
+    public Task DeleteWorkout(Guid id)
     {
-        File.Delete($"{workoutName}.json");
+        File.Delete($"{id}.json");
         return Task.CompletedTask;
     }
 
-    public Task<WorkoutModel> GetWorkout(string workoutName)
+    public Task<WorkoutModel> GetWorkout(Guid id)
     {
-        if (!File.Exists($"{directoryPath}/{workoutName}.json"))
+        if (!File.Exists($"{directoryPath}/{id}.json"))
         {
             throw new Exception("Workout does not exist");
         }
         else
         {
-            string workoutJson = File.ReadAllText($"{directoryPath}/{workoutName}.json");
+            string workoutJson = File.ReadAllText($"{directoryPath}/{id}.json");
             WorkoutModel workout = JsonSerializer.Deserialize<WorkoutModel>(workoutJson);
             return Task.FromResult(workout);
         }

@@ -8,46 +8,60 @@ namespace WorkoutBuilderAPI.Application.Infrastructure;
 
 public class MongoDbRepo : IWorkoutRepository
 {
-
-    private readonly IMongoCollection<WorkoutModel> _collection;
-
-    public MongoDbRepo(IMongoClient client, string databaseName)
+    private readonly string connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+    private readonly string databaseName = Environment.GetEnvironmentVariable("MONGO_DATABASE_NAME");
+    private readonly string collectionName = Environment.GetEnvironmentVariable("MONGO_COLLECTION_NAME");
+    private readonly IConfiguration _configuration;
+    private readonly IMongoCollection<WorkoutModel> _workouts;
+    public MongoDbRepo (IConfiguration configuration)
     {
+        _configuration = configuration;
+        var client = new MongoClient(connectionString);
         var database = client.GetDatabase(databaseName);
-        _collection = database.GetCollection<WorkoutModel>("DataMigration");
+        _workouts = database.GetCollection<WorkoutModel>(collectionName);
     }
 
-    public async Task CreateWorkout(WorkoutModel workout)
+    public Task CreateWorkout(WorkoutModel workout)
     {
-        await _collection.InsertOneAsync(workout);
+        _workouts.InsertOneAsync(workout);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteWorkout(string Id)
+    public Task DeleteWorkout(Guid id)
     {
-        var filter = Builders<WorkoutModel>.Filter.Eq("_id", Id);
-        await _collection.DeleteOneAsync(filter);
-    }
-    public async Task<WorkoutModel> GetWorkout(string Id)
-    {
-        var filter = Builders<WorkoutModel>.Filter.Eq("_id", Id);
-        return await _collection.Find(filter).FirstOrDefaultAsync();
+        var filter = Builders<WorkoutModel>.Filter.Eq("Id", id);
+        _workouts.DeleteOneAsync(filter);
+        return Task.CompletedTask;
     }
 
-
-    public async Task UpdateWorkout(WorkoutModel updatedWorkout)
+    public Task<WorkoutModel> GetWorkout(Guid id)
     {
-        var filter = Builders<WorkoutModel>.Filter.Eq("_id", updatedWorkout.Id);
-        var update = Builders<WorkoutModel>.Update
-            .Set("Name", updatedWorkout.Name)
-            .Set("Exercises", updatedWorkout.Exercises);
-
-        await _collection.UpdateOneAsync(filter, update);
+        var filter = Builders<WorkoutModel>.Filter.Eq("Id", id);
+        var result =_workouts.Find(filter).FirstOrDefaultAsync();
+        return result;
     }
 
-
-    public async Task<List<WorkoutModel>> GetWorkouts()
+    public Task<List<WorkoutModel>> GetWorkouts()
     {
-        var workouts = await _collection.Find(_ => true).ToListAsync();
-        return workouts;
+        return _workouts.Find(workout => true).ToListAsync();
+    }
+
+    public Task UpdateWorkout(WorkoutModel workout)
+    {
+        try
+        {
+            var filter = Builders<WorkoutModel>.Filter.Eq("Id", workout.Id);
+            var update = Builders<WorkoutModel>.Update
+                .Set("Id", workout.Id)
+                .Set("Name", workout.Name)
+                .Set("Exercises", workout.Exercises);
+            _workouts.UpdateOne(filter, update);
+            return Task.CompletedTask;
+        }
+        catch
+        {
+            Console.WriteLine("Request fails at db repository");
+            return Task.CompletedTask;
+        }
     }
 }
