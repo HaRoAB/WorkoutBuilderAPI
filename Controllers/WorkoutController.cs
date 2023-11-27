@@ -1,4 +1,3 @@
-using WorkoutBuilderAPI.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using WorkoutBuilderAPI.Application.Interfaces;
 using System.Text.Json;
@@ -28,28 +27,28 @@ public class WorkoutController : ControllerBase
 
 
     [HttpGet("{id}")]
-    public Task GetWorkout(string id)
+    public Task GetWorkout(Guid id)
     {
         var workout = _workoutService.GetWorkout(id);
         return Task.FromResult(workout);
     }
 
     [HttpPost]
-    public Task CreateWorkout(string workout)
+    public Task CreateWorkout(WorkoutModel workout)
     {
         _workoutService.CreateWorkout(workout);
         return Task.CompletedTask;
     }
 
     [HttpPut]
-    public Task UpdateWorkout(string workout)
+    public Task UpdateWorkout(WorkoutModel workout)
     {
         _workoutService.UpdateWorkout(workout);
         return Task.CompletedTask;
     }
 
     [HttpDelete("{id}")]
-    public Task DeleteWorkout(string id)
+    public Task DeleteWorkout(Guid id)
     {
         _workoutService.DeleteWorkout(id);
         return Task.CompletedTask;

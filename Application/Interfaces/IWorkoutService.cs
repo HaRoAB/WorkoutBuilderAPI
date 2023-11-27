@@ -4,9 +4,9 @@ namespace WorkoutBuilderAPI.Application.Interfaces;
 
 public interface IWorkoutService
 {
-    Task<WorkoutModel> GetWorkout(string id);
+    Task<WorkoutModel> GetWorkout(Guid id);
     Task<List<WorkoutModel>> GetWorkouts();
-    Task CreateWorkout(string workout);
-    Task UpdateWorkout(string workout);
-    Task DeleteWorkout(string id);
+    Task CreateWorkout(WorkoutModel workout);
+    Task UpdateWorkout(WorkoutModel workout);
+    Task DeleteWorkout(Guid id);
 }

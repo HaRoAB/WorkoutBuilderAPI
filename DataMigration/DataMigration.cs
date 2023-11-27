@@ -1,16 +1,17 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 
+namespace WorkoutBuilderAPI.DataMigration;
 public class DataMigration
 {
     public static void MigrateDataToMongoDB()
     {
         string connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
     
-        MongoClient client = new MongoClient(connectionString);
+        MongoClient client = new (connectionString);
 
         IMongoDatabase database = client.GetDatabase("all_your_database_are_belong_to_us");
-        IMongoCollection<BsonDocument> collection = database.GetCollection<BsonDocument>("Migration");
+        IMongoCollection<BsonDocument> collection = database.GetCollection<BsonDocument>("DataMigration");
 
         // Read data from a JSON file
         string jsonFilePath = "C:/Users/89hanmad/source/repos/Examesnarbete/WorkoutBuilderAPI/Application/Infrastructure/JSON/workout.json";

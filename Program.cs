@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using MongoDB.Driver;
 using WorkoutBuilderAPI.Application.Domain;
 using WorkoutBuilderAPI.Application.Infrastructure;
 using WorkoutBuilderAPI.Application.Interfaces;
@@ -19,7 +15,7 @@ builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 
 
 //DataMigration.MigrateDataToMongoDB();
-// builder.Services.AddScoped<IWorkoutRepository>(_ =>
+//builder.Services.AddScoped<IWorkoutRepository>(_ =>
 // {
 //     var connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
 //     var mongoClient = new MongoClient(connectionString);
@@ -27,14 +23,7 @@ builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 //     return new MongoDbRepo(mongoClient, "all_your_database_are_belong_to_us");
 // });
 
-var connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
-var databaseName = "all_your_database_are_belong_to_us"; 
-
-builder.Services.AddScoped<IMongoClient>(_ => new MongoClient(connectionString));
-builder.Services.AddScoped<IWorkoutRepository>(_ => new MongoDbRepo(
-    _.GetService<IMongoClient>(),
-    databaseName
-));
+builder.Services.AddScoped<IWorkoutRepository, MongoDbRepo>();
 
 builder.Services.AddCors(options =>
 {
