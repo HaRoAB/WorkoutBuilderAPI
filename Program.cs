@@ -36,12 +36,6 @@ builder.Services.AddScoped<IWorkoutRepository>(_ => new MongoDbRepo(
     databaseName
 ));
 
-
-builder.Services.AddScoped<IWorkoutRepository, MongoDbRepo>();
-
-builder.Services.AddScoped<IWorkoutService, WorkoutService>();
-
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins", builder =>
