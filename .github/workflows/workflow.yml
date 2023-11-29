@@ -27,8 +27,8 @@ jobs:
           # Build your Docker image
           docker build -t $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG .
           
-          # Authenticate Docker CLI with Azure ACR using AAD credentials
-          docker login $REGISTRY_NAME.azurecr.io --username $AZURE_CLIENT_ID --password-stdin <<< $(az acr get-credential --name $REGISTRY_NAME --output json | jq -r '.passwords[0].value')
+          # Login to Azure Container Registry using Azure credentials
+          docker login $REGISTRY_NAME.azurecr.io --username $AZURE_CLIENT_ID --password $AZURE_CLIENT_SECRET
           
           # Push Docker image to ACR
           docker push $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG
