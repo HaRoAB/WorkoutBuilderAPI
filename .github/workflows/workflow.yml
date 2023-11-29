@@ -7,11 +7,11 @@ on:
 
 env:
   # Configure the ACR login server and resource group
-  REGISTRY_NAME: boldgrouperacr
-  REGISTRY_URL: boldgrouperacr.azurecr.io
-  RESOURCE_GROUP: boldgrouper-rg
-  TAG: latest
-  IMAGE_NAME: api
+  REGISTRY_NAME: "boldgrouperacr"
+  REGISTRY_URL: "boldgrouperacr.azurecr.io"
+  RESOURCE_GROUP: "boldgrouper-rg"
+  TAG: "latest"
+  IMAGE_NAME: "api"
 
 
 jobs:
