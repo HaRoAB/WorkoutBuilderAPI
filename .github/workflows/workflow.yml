@@ -1,7 +1,6 @@
-name: Push to ACR using Managed Identity
+name: Run Azure Login with OIDC
 
 env:
-  # Configure the ACR login server and resource group
   REGISTRY_NAME: "boldgrouperacr"
   REGISTRY_URL: "boldgrouperacr.azurecr.io"
   RESOURCE_GROUP: "boldgrouper-rg"
@@ -11,24 +10,25 @@ env:
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
-jobs:
-  push-to-acr:
+permissions:
+      id-token: write
+      contents: read
+jobs: 
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Build and Push Docker Image
-        run: |
-          # Build your Docker image
-          docker build -t $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG .
-          
-          # Login to Azure Container Registry using Azure credentials
-          docker login $REGISTRY_NAME.azurecr.io --username $AZURE_CLIENT_ID --password $AZURE_CLIENT_SECRET
-          
-          # Push Docker image to ACR
-          docker push $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  
+      - name: Azure CLI script
+        uses: azure/CLI@v1
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account show
