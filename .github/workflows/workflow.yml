@@ -1,10 +1,5 @@
 name: Push to ACR using Managed Identity
 
-on:
-  push:
-    branches:
-      - main
-
 env:
   # Configure the ACR login server and resource group
   REGISTRY_NAME: "boldgrouperacr"
@@ -13,6 +8,10 @@ env:
   TAG: "latest"
   IMAGE_NAME: "api"
 
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   push-to-acr:
@@ -24,9 +23,10 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           # Build your Docker image (replace with your build commands)
-          docker build -t ${{REGISTRY_NAME}}.azurecr.io/${{IMAGE_NAME:}}:${{TAG}} .
+          docker build -t $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG .
           
           # Push Docker image to ACR using Managed Identity
-          az acr login --name ${{REGISTRY_NAME}}
-          docker push ${{REGISTRY_NAME}}.azurecr.io/${{IMAGE_NAME:}}:${{TAG}}
+          az acr login --name $REGISTRY_NAME
+          docker push $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG
+
 
