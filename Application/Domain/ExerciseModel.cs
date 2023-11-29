@@ -2,7 +2,7 @@
 namespace WorkoutBuilderAPI.Application.Domain;
 
 public class ExerciseModel
-{
+{    
     public Guid Id { get; set; }
     public string Name { get; set; }
     public int Sets { get; set; }

@@ -3,6 +3,7 @@ using WorkoutBuilderAPI.Application.Domain;
 using WorkoutBuilderAPI.Application.Infrastructure;
 using WorkoutBuilderAPI.Application.Interfaces;
 using WorkoutBuilderAPI.Application.Services;
+using WorkoutBuilderAPI.DataMigration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 //builder.Services.AddScoped<IWorkoutRepository, JsonRepository>();
 
 
-//DataMigration.MigrateDataToMongoDB();
+// DataMigration.MigrateDataToMongoDB();
 //builder.Services.AddScoped<IWorkoutRepository>(_ =>
 // {
 //     var connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
@@ -34,8 +35,6 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod();
     });
 });
-
-
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
