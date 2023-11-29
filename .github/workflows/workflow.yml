@@ -1,12 +1,4 @@
-name: Push to ACR using Managed Identity
-
-env:
-  # Configure the ACR login server and resource group
-  REGISTRY_NAME: "boldgrouperacr"
-  REGISTRY_URL: "boldgrouperacr.azurecr.io"
-  RESOURCE_GROUP: "boldgrouper-rg"
-  TAG: "latest"
-  IMAGE_NAME: "api"
+name: Push to ACR using Docker CLI with AAD
 
 on:
   push:
@@ -17,16 +9,25 @@ jobs:
   push-to-acr:
     runs-on: ubuntu-latest
 
+    env:
+      REGISTRY_NAME: <your-acr-name>
+      IMAGE_NAME: <your-image-name>
+      TAG: <your-image-tag>
+
     steps:
       - uses: actions/checkout@v2
 
       - name: Build and Push Docker Image
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
-          # Build your Docker image (replace with your build commands)
+          # Build your Docker image
           docker build -t $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG .
           
-          # Push Docker image to ACR using Managed Identity
-          az acr login --name $REGISTRY_NAME
+          # Authenticate Docker CLI with Azure ACR using AAD credentials
+          docker login $REGISTRY_NAME.azurecr.io --username $AZURE_CLIENT_ID --password-stdin <<< $(az acr get-credential --name $REGISTRY_NAME --output json | jq -r '.passwords[0].value')
+          
+          # Push Docker image to ACR
           docker push $REGISTRY_NAME.azurecr.io/$IMAGE_NAME:$TAG
-
-
