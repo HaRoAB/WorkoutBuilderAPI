@@ -1,37 +1,51 @@
 name: Run Azure Login with OIDC
 
 env:
-  REGISTRY_NAME: "boldgrouperacr"
-  REGISTRY_URL: "boldgrouperacr.azurecr.io"
-  RESOURCE_GROUP: "boldgrouper-rg"
+  REGISTRY_NAME: "regularearwigacr"
+  REGISTRY_URL: "regularearwigacr.azurecr.io"
+  RESOURCE_GROUP: "regularearwig-rg"
+  CLUSTER_NAME: "regularearwig-aks"
+  PROJECT_NAME: "fitnessapp"
+  PASSWORD: "8s15gPZ5F6OJkyVtELaANG9nktIUb3iRuM+jAcMGUY+ACRDmGH3h"
   TAG: "latest"
-  IMAGE_NAME: "api"
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  K8S_DEPLOYMENT_NAME: "fitnessapp-deployment"
 
 on: [push]
 
-permissions:
-      id-token: write
-      contents: read
-jobs: 
-  build-and-deploy:
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Azure interactive login
-        run: az login
+    - uses: actions/checkout@v4
 
-      # - name: Azure login
-      #   uses: azure/login@v1
-      #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  
-      - name: Azure CLI script
-        uses: azure/CLI@v1
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az account show
+    - name: Install Azure CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y azure-cli
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Check Azure Login Status
+      run: |
+        az account show
+
+    - name: Gets K8s context
+      uses: azure/aks-set-context@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        resource-group: ${{ env.RESOURCE_GROUP }}
+        cluster-name: ${{ env.CLUSTER_NAME }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker login ${{ env.REGISTRY_URL }} -u ${{ env.REGISTRY_NAME }} -p ${{ env.PASSWORD }}
+        docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ env.TAG }} .
+        docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ env.TAG }}
+
+        
+    - name: Trigger Rolling Restart
+      run: |
+        kubectl rollout restart deployment/${{ env.K8S_DEPLOYMENT_NAME }} -n fitnessappnamespace
