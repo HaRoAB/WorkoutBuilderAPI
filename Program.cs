@@ -4,6 +4,7 @@ using WorkoutBuilderAPI.Application.Infrastructure;
 using WorkoutBuilderAPI.Application.Interfaces;
 using WorkoutBuilderAPI.Application.Services;
 using WorkoutBuilderAPI.DataMigration;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,17 +14,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 //builder.Services.AddScoped<IWorkoutRepository, JsonRepository>();
-
-
-// DataMigration.MigrateDataToMongoDB();
-//builder.Services.AddScoped<IWorkoutRepository>(_ =>
-// {
-//     var connectionString = "mongodb+srv://Hannsis:lollipop123@cluster0.wvu1dqq.mongodb.net/";
-//     var mongoClient = new MongoClient(connectionString);
-    
-//     return new MongoDbRepo(mongoClient, "all_your_database_are_belong_to_us");
-// });
-
 builder.Services.AddScoped<IWorkoutRepository, MongoDbRepo>();
 
 builder.Services.AddCors(options =>
