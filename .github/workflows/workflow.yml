@@ -1,37 +1,45 @@
-name: Run Azure Login with OIDC
+name: ci
 
-env:
-  REGISTRY_NAME: "boldgrouperacr"
-  REGISTRY_URL: "boldgrouperacr.azurecr.io"
-  RESOURCE_GROUP: "boldgrouper-rg"
-  TAG: "latest"
-  IMAGE_NAME: "api"
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+on:
+  push:
+    branches:
+      - 'main'
 
-on: [push]
-
-permissions:
-      id-token: write
-      contents: read
-jobs: 
-  build-and-deploy:
-    runs-on: ubuntu-latest
+jobs:
+  docker:
+    runs-on: self-hosted
     steps:
-      - name: Azure interactive login
-        run: az login
-
-      # - name: Azure login
-      #   uses: azure/login@v1
+      -
+        name: Export ACR_SERVER
+        run: |
+          echo "ACR_SERVER=$ACR_SERVER" >> $GITHUB_ENV
+          echo "ACR_NAME=$ACR_NAME" >> $GITHUB_ENV
+      - 
+        name: az login
+        run: az login --identity
+      # - 
+      #   name: Azure login
+      #   uses: azure/login@v2
       #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     auth-type: IDENTITY          
       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
       #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  
-      - name: Azure CLI script
-        uses: azure/CLI@v1
+      #     enable-AzPSSession: true
+      - 
+        name: Login to ACR
+        run: az acr login --name $ACR_NAME
+      - 
+        name: Print ACR_SERVER
+        run: echo $ACR_SERVER
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          azcliversion: latest
-          inlineScript: |
-            az account show
+          push: true
+          tags: ${{ env.ACR_SERVER }}/api:latest
