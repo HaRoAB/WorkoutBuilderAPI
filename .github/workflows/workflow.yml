@@ -1,51 +1,45 @@
-name: Run Azure Login with OIDC
+name: ci
 
-env:
-  REGISTRY_NAME: "regularearwigacr"
-  REGISTRY_URL: "regularearwigacr.azurecr.io"
-  RESOURCE_GROUP: "regularearwig-rg"
-  CLUSTER_NAME: "regularearwig-aks"
-  PROJECT_NAME: "fitnessapp"
-  PASSWORD: "8s15gPZ5F6OJkyVtELaANG9nktIUb3iRuM+jAcMGUY+ACRDmGH3h"
-  TAG: "latest"
-  K8S_DEPLOYMENT_NAME: "fitnessapp-deployment"
-
-on: [push]
+on:
+  push:
+    branches:
+      - 'main'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  docker:
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Install Azure CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y azure-cli
-
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Check Azure Login Status
-      run: |
-        az account show
-
-    - name: Gets K8s context
-      uses: azure/aks-set-context@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-        resource-group: ${{ env.RESOURCE_GROUP }}
-        cluster-name: ${{ env.CLUSTER_NAME }}
-
-    - name: Build and Push Docker Image
-      run: |
-        docker login ${{ env.REGISTRY_URL }} -u ${{ env.REGISTRY_NAME }} -p ${{ env.PASSWORD }}
-        docker build -t ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ env.TAG }} .
-        docker push ${{ env.REGISTRY_URL }}/${{ env.PROJECT_NAME }}:${{ env.TAG }}
-
-        
-    - name: Trigger Rolling Restart
-      run: |
-        kubectl rollout restart deployment/${{ env.K8S_DEPLOYMENT_NAME }} -n fitnessappnamespace
+      -
+        name: Export ACR_SERVER
+        run: |
+          echo "ACR_SERVER=$ACR_SERVER" >> $GITHUB_ENV
+          echo "ACR_NAME=$ACR_NAME" >> $GITHUB_ENV
+      - 
+        name: az login
+        run: az login --identity
+      # - 
+      #   name: Azure login
+      #   uses: azure/login@v2
+      #   with:
+      #     auth-type: IDENTITY          
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      #     enable-AzPSSession: true
+      - 
+        name: Login to ACR
+        run: az acr login --name $ACR_NAME
+      - 
+        name: Print ACR_SERVER
+        run: echo $ACR_SERVER
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ env.ACR_SERVER }}/api:latest

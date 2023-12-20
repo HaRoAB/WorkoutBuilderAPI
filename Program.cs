@@ -13,7 +13,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
-
 builder.Services.AddScoped<IWorkoutRepository, MongoDbRepo>();
 
 builder.Services.AddCors(options =>
